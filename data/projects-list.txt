@@ -1,0 +1,11 @@
+# 项目集列表
+# 每行一个文件路径，以 # 开头的行为注释
+# 元信息（题目、更新时间、分类、标签、引言）会自动从文件本身读取
+
+# 独立项目
+项目集/AI数字人技术实现--EasyNeurosama.md
+项目集/定理证明大模型--proverpipeline.md
+
+# Agent微项目
+项目集/Agent微项目/分子性质问答平台--Langchain-web.md
+项目集/Agent微项目/从零训练迷你GPT--Easy-nanogpt.md

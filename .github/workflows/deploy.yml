@@ -1,0 +1,23 @@
+# GitHub Pages 部署工作流（可选）
+# 如果使用 GitHub Actions 自动部署，可以使用此文件
+# 对于纯静态站点，通常不需要此文件，直接启用 GitHub Pages 即可
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+

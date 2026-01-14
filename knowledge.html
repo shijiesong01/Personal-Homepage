@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 固定顶部栏 -->
+    <header class="header">
+        <div class="header-container">
+            <!-- 左侧：头像 + 标题 -->
+            <div class="header-left">
+                <a href="index.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;">
+                    <div class="avatar"></div>
+                    <span class="site-title">shijie的主页</span>
+                </a>
+            </div>
+            <!-- 右侧：导航菜单 -->
+            <nav class="header-right">
+                <a href="knowledge.html" class="nav-link">知识库</a>
+                <a href="projects.html" class="nav-link">项目集</a>
+                <a href="index.html" class="nav-link">关于我</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="theme-icon">☀</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主容器：包含侧边栏、主内容区、目录栏 -->
+    <div class="main-wrapper">
+        <!-- 固定左侧侧边栏：知识库 -->
+        <aside class="sidebar">
+            <div class="sidebar-container" id="sidebarContainer">
+                <!-- 知识库导航/目录占位容器 -->
+            </div>
+        </aside>
+
+        <!-- 中部主内容区 -->
+        <main class="main-content">
+            <div class="content-container" id="contentContainer">
+                <!-- 内容展示占位容器 -->
+            </div>
+        </main>
+
+        <!-- 固定右侧目录栏：本节目录 -->
+        <aside class="toc">
+            <div class="toc-container" id="tocContainer">
+                <!-- 本节目录占位容器 -->
+            </div>
+        </aside>
+    </div>
+
+    <script src="js/markdown.js"></script>
+    <script src="js/knowledge.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // 知识库页面初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // 初始化主题
+                if (typeof initTheme === 'function') {
+                    initTheme();
+                }
+                
+                // 绑定主题切换按钮事件
+                const themeToggle = document.getElementById('themeToggle');
+                if (themeToggle && typeof toggleTheme === 'function') {
+                    themeToggle.addEventListener('click', toggleTheme);
+                }
+                
+                // 加载所有知识库文章的元信息
+                const data = await loadAllKnowledgeMeta();
+                if (data) {
+                    // 构建并渲染左侧导航栏
+                    const navigation = buildKnowledgeSidebarNavigation(data);
+                    renderKnowledgeSidebar(navigation, 'sidebarContainer');
+                    
+                    // 检查URL参数，加载指定文章
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const articlePath = urlParams.get('path');
+                    if (articlePath) {
+                        // 加载指定文章
+                        await loadAndDisplayKnowledgeArticle(decodeURIComponent(articlePath));
+                    } else {
+                        // 默认显示文章列表
+                        renderKnowledgeArticleList(data, 'contentContainer');
+                        // 清空右侧目录
+                        renderKnowledgeTOC([], 'tocContainer');
+                    }
+                } else {
+                    const contentContainer = document.getElementById('contentContainer');
+                    if (contentContainer) {
+                        contentContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">加载失败</div>';
+                    }
+                }
+                
+                // 监听浏览器前进后退
+                window.addEventListener('popstate', async function(event) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const articlePath = urlParams.get('path');
+                    if (articlePath) {
+                        await loadAndDisplayKnowledgeArticle(decodeURIComponent(articlePath));
+                    } else {
+                        const data = await loadAllKnowledgeMeta();
+                        if (data) {
+                            renderKnowledgeArticleList(data, 'contentContainer');
+                            renderKnowledgeTOC([], 'tocContainer');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('知识库页面初始化失败:', error);
+            }
+        });
+    </script>
+</body>
+</html>
+
